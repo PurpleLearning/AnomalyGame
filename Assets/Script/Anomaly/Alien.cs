@@ -1,19 +1,29 @@
 using UnityEngine;
 
-public class Alien : MonoBehaviour
+public class Alien : MonoBehaviour, IAnomaly
 {
-    [SerializeField] private bool isAnomaly = false;
-    [SerializeField] private string headObjectName = "Head";
+    //[SerializeField] private bool isAnomaly = false;
+    [SerializeField] private string headObjectName = "head";
     
     void Start()
     {
-        isAnomaly = true;
         
-        if (isAnomaly)
-        {
-            ChangeAlienHeadColor();
-            AnomalyTagAdded();
-        }
+    }
+    
+    // Implementation of IAnomaly interface
+    public void SetAsAnomaly()
+    {
+        //isAnomaly = true;
+        ChangeAlienHeadColor();
+        gameObject.tag = "anomaly";
+    }
+    
+    // Implementation of IAnomaly interface
+    public void RevertAnomaly()
+    {
+        //isAnomaly = false;
+        gameObject.tag = "normal";  
+        ResetHeadColor();
     }
     
     void ChangeAlienHeadColor()
@@ -27,24 +37,37 @@ public class Alien : MonoBehaviour
             return;
         }
         
-        // Fiidn the material
+        // Find the material
         Material[] materials = renderer.materials;
         
         for (int i = 0; i < materials.Length; i++)
         {
             if (materials[i] != null && materials[i].name.Contains("crystal"))
             {
-                // change to red
+                // Change to red
                 materials[i].color = Color.red;
                 return;
             }
         }
     }
-
-
-    void AnomalyTagAdded()
-    {
-        gameObject.tag = "anomaly";
-    }
     
+    void ResetHeadColor()
+    {
+         
+        Renderer renderer = transform.Find(headObjectName)?.GetComponent<Renderer>();
+        
+        if (renderer == null) return;
+        
+        Material[] materials = renderer.materials;
+        
+        for (int i = 0; i < materials.Length; i++)
+        {
+            if (materials[i] != null && materials[i].name.Contains("crystal"))
+            {
+                // Reset to white or original color
+                materials[i].color = Color.cyan;
+                return;
+            }
+        }
+    }
 }
